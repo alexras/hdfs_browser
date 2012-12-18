@@ -192,6 +192,8 @@ class HdfsBrowser(cmd.Cmd):
             while len(bits) < len(flags):
                 bits.append(0)
 
+            bits.reverse()
+
             for i, flag in enumerate(flags):
                 if bits[i] == 1:
                     perm_string += flags[i]
