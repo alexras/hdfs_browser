@@ -137,8 +137,9 @@ class HdfsBrowser(cmd.Cmd):
                 file_info["permission"] = self.printable_permissions(file_info)
                 file_info["accessTime"] = self.printable_access_time(file_info)
 
-                print ("%(permission)s   1 %(owner)s %(group)s %(length) 13s "
-                       "%(accessTime)s %(pathSuffix)s") % file_info
+                print ("%(permission)s  %(replication) 3d %(owner)s %(group)s "
+                       "%(length) 13s %(accessTime)s %(pathSuffix)s") % (
+                    file_info)
         else:
             print self.columnar_list(
                 map(lambda x: x["pathSuffix"], file_statuses))
