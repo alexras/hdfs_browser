@@ -214,8 +214,17 @@ class HdfsBrowser(cmd.Cmd):
         else:
             return "%s % 2s % 5s" % (month, day, time_of_day)
 
-    def help_ls(self):
-        self.parsers["ls"].print_help()
+    def do_help(self, command):
+        if len(command.strip()) == 0:
+            print "Available commands:\n"
+            for command in self.parsers:
+                print "%s - %s" % (command, self.parsers[command].description)
+            print ""
+        elif command in self.parsers:
+            self.parsers[command].print_help()
+        else:
+            print "No such command: %s" % (command)
+
 
     def do_exit(self, s):
         """Quits the shell
