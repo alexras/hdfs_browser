@@ -51,6 +51,15 @@ class HdfsBrowser(cmd.Cmd):
 
         self.parsers["cd"] = cd_parser
 
+        rm_parser = argparse.ArgumentParser(
+            prog="rm", description="delete a file or directory")
+        rm_parser.add_argument("file", help="the file to delete")
+        rm_parser.add_argument(
+            "-r", "--recursive", help="remove the entire directory tree "
+            "rooted at <file> recursively", default=False, action="store_true")
+
+        self.parsers["rm"] = rm_parser
+
     def update_prompt(self):
         self.prompt = "HDFS %s:%s > " % (
             self.namenode.split(':')[0], self.cwd)
@@ -103,6 +112,30 @@ class HdfsBrowser(cmd.Cmd):
             self.update_prompt()
         else:
             print "cd: %s: No such file or directory" % (full_path)
+
+    def rm_file(self, filename, recursive):
+        if recursive:
+            recursive = "true"
+        else:
+            recursive = "false"
+
+        return self.webhdfs_request(
+            filename, op="DELETE", method="delete",
+            recursive=recursive)
+
+    def do_rm(self, s):
+        args = self.parse_args(s, "rm")
+
+        if args is None:
+            return
+
+        filename = os.path.join(self.cwd, args.file)
+
+        deleted_json = self.rm_file(filename, args.recursive)
+
+        if "boolean" in deleted_json:
+            if not deleted_json["boolean"]:
+                print "rm %s failed" % (filename)
 
     def complete_cd(self, text, line, begin_index, end_index):
         return self.path_completion(text, line, begin_index, end_index)
